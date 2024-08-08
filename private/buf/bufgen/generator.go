@@ -34,6 +34,7 @@ import (
 	"github.com/bufbuild/buf/private/pkg/app"
 	"github.com/bufbuild/buf/private/pkg/command"
 	"github.com/bufbuild/buf/private/pkg/connectclient"
+	"github.com/bufbuild/buf/private/pkg/slicesext"
 	"github.com/bufbuild/buf/private/pkg/storage/storageos"
 	"github.com/bufbuild/buf/private/pkg/thread"
 	"github.com/bufbuild/buf/private/pkg/tracing"
@@ -103,6 +104,21 @@ func (g *generator) Generate(
 		if err := bufimagemodify.Modify(image, config.GenerateManagedConfig()); err != nil {
 			return err
 		}
+	}
+	shouldDeleteOuts := config.CleanPluginOuts()
+	if generateOptions.deleteOuts != nil {
+		shouldDeleteOuts = *generateOptions.deleteOuts
+	}
+	if shouldDeleteOuts {
+		if err := g.deleteOuts(
+			ctx,
+			generateOptions.baseOutDirPath,
+			config.GeneratePluginConfigs(),
+		); err != nil {
+			return err
+		}
+	}
+	for _, image := range images {
 		if err := g.generateCode(
 			ctx,
 			container,
@@ -116,6 +132,26 @@ func (g *generator) Generate(
 		}
 	}
 	return nil
+}
+
+func (g *generator) deleteOuts(
+	ctx context.Context,
+	baseOutDir string,
+	pluginConfigs []bufconfig.GeneratePluginConfig,
+) error {
+	return bufprotopluginos.NewCleaner(g.storageosProvider).DeleteOuts(
+		ctx,
+		slicesext.Map(
+			pluginConfigs,
+			func(pluginConfig bufconfig.GeneratePluginConfig) string {
+				out := pluginConfig.Out()
+				if baseOutDir != "" && baseOutDir != "." {
+					return filepath.Join(baseOutDir, out)
+				}
+				return out
+			},
+		),
+	)
 }
 
 func (g *generator) generateCode(
@@ -451,8 +487,8 @@ func validateResponses(
 }
 
 type generateOptions struct {
-	// plugin specific options:
 	baseOutDirPath                string
+	deleteOuts                    *bool
 	includeImportsOverride        *bool
 	includeWellKnownTypesOverride *bool
 }

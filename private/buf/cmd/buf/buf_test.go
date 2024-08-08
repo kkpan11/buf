@@ -89,6 +89,34 @@ func TestSuccessProfile1(t *testing.T) {
 	testRunStdoutProfile(t, nil, 0, ``, "build", filepath.Join("testdata", "success"))
 }
 
+func TestSuccessDir(t *testing.T) {
+	t.Parallel()
+	testRunStdout(t, nil, 0, ``, "build", filepath.Join("testdata", "successnobufyaml"))
+	testRunStdout(
+		t,
+		nil,
+		0,
+		``,
+		"build",
+		filepath.Join("testdata", "successnobufyaml"),
+		"--path",
+		filepath.Join("testdata", "successnobufyaml", "buf", "buf.proto"),
+	)
+	wd, err := osext.Getwd()
+	require.NoError(t, err)
+	testRunStdout(t, nil, 0, ``, "build", filepath.Join(wd, "testdata", "successnobufyaml"))
+	testRunStdout(
+		t,
+		nil,
+		0,
+		``,
+		"build",
+		filepath.Join(wd, "testdata", "successnobufyaml"),
+		"--path",
+		filepath.Join(wd, "testdata", "successnobufyaml", "buf", "buf.proto"),
+	)
+}
+
 func TestFail1(t *testing.T) {
 	t.Parallel()
 	testRunStdout(
@@ -528,14 +556,14 @@ RPC_PASCAL_CASE                   BASIC, DEFAULT           Checks that RPCs are 
 SERVICE_PASCAL_CASE               BASIC, DEFAULT           Checks that services are PascalCase.
 SYNTAX_SPECIFIED                  BASIC, DEFAULT           Checks that all files have a syntax specified.
 ENUM_VALUE_PREFIX                 DEFAULT                  Checks that enum values are prefixed with ENUM_NAME_UPPER_SNAKE_CASE.
-ENUM_ZERO_VALUE_SUFFIX            DEFAULT                  Checks that enum zero values are suffixed with _UNSPECIFIED (suffix is configurable).
+ENUM_ZERO_VALUE_SUFFIX            DEFAULT                  Checks that enum zero values have a consistent suffix (configurable, default suffix is "_UNSPECIFIED").
 FILE_LOWER_SNAKE_CASE             DEFAULT                  Checks that filenames are lower_snake_case.
 PACKAGE_VERSION_SUFFIX            DEFAULT                  Checks that the last component of all packages is a version of the form v\d+, v\d+test.*, v\d+(alpha|beta)\d+, or v\d+p\d+(alpha|beta)\d+, where numbers are >=1.
 PROTOVALIDATE                     DEFAULT                  Checks that protovalidate rules are valid and all CEL expressions compile.
 RPC_REQUEST_RESPONSE_UNIQUE       DEFAULT                  Checks that RPC request and response types are only used in one RPC (configurable).
 RPC_REQUEST_STANDARD_NAME         DEFAULT                  Checks that RPC request type names are RPCNameRequest or ServiceNameRPCNameRequest (configurable).
 RPC_RESPONSE_STANDARD_NAME        DEFAULT                  Checks that RPC response type names are RPCNameResponse or ServiceNameRPCNameResponse (configurable).
-SERVICE_SUFFIX                    DEFAULT                  Checks that services are suffixed with Service (suffix is configurable).
+SERVICE_SUFFIX                    DEFAULT                  Checks that services have a consistent suffix (configurable, default suffix is "Service").
 COMMENT_ENUM                      COMMENTS                 Checks that enums have non-empty comments.
 COMMENT_ENUM_VALUE                COMMENTS                 Checks that enum values have non-empty comments.
 COMMENT_FIELD                     COMMENTS                 Checks that fields have non-empty comments.
@@ -604,13 +632,13 @@ PACKAGE_LOWER_SNAKE_CASE          BASIC, DEFAULT, STYLE_BASIC, STYLE_DEFAULT  Ch
 RPC_PASCAL_CASE                   BASIC, DEFAULT, STYLE_BASIC, STYLE_DEFAULT  Checks that RPCs are PascalCase.
 SERVICE_PASCAL_CASE               BASIC, DEFAULT, STYLE_BASIC, STYLE_DEFAULT  Checks that services are PascalCase.
 ENUM_VALUE_PREFIX                 DEFAULT, STYLE_DEFAULT                      Checks that enum values are prefixed with ENUM_NAME_UPPER_SNAKE_CASE.
-ENUM_ZERO_VALUE_SUFFIX            DEFAULT, STYLE_DEFAULT                      Checks that enum zero values are suffixed with _UNSPECIFIED (suffix is configurable).
+ENUM_ZERO_VALUE_SUFFIX            DEFAULT, STYLE_DEFAULT                      Checks that enum zero values have a consistent suffix (configurable, default suffix is "_UNSPECIFIED").
 FILE_LOWER_SNAKE_CASE             DEFAULT, STYLE_DEFAULT                      Checks that filenames are lower_snake_case.
 PACKAGE_VERSION_SUFFIX            DEFAULT, STYLE_DEFAULT                      Checks that the last component of all packages is a version of the form v\d+, v\d+test.*, v\d+(alpha|beta)\d+, or v\d+p\d+(alpha|beta)\d+, where numbers are >=1.
 RPC_REQUEST_RESPONSE_UNIQUE       DEFAULT, STYLE_DEFAULT                      Checks that RPC request and response types are only used in one RPC (configurable).
 RPC_REQUEST_STANDARD_NAME         DEFAULT, STYLE_DEFAULT                      Checks that RPC request type names are RPCNameRequest or ServiceNameRPCNameRequest (configurable).
 RPC_RESPONSE_STANDARD_NAME        DEFAULT, STYLE_DEFAULT                      Checks that RPC response type names are RPCNameResponse or ServiceNameRPCNameResponse (configurable).
-SERVICE_SUFFIX                    DEFAULT, STYLE_DEFAULT                      Checks that services are suffixed with Service (suffix is configurable).
+SERVICE_SUFFIX                    DEFAULT, STYLE_DEFAULT                      Checks that services have a consistent suffix (configurable, default suffix is "Service").
 COMMENT_ENUM                      COMMENTS                                    Checks that enums have non-empty comments.
 COMMENT_ENUM_VALUE                COMMENTS                                    Checks that enum values have non-empty comments.
 COMMENT_FIELD                     COMMENTS                                    Checks that fields have non-empty comments.
@@ -666,14 +694,14 @@ RPC_PASCAL_CASE                   BASIC, DEFAULT           Checks that RPCs are 
 SERVICE_PASCAL_CASE               BASIC, DEFAULT           Checks that services are PascalCase.
 SYNTAX_SPECIFIED                  BASIC, DEFAULT           Checks that all files have a syntax specified.
 ENUM_VALUE_PREFIX                 DEFAULT                  Checks that enum values are prefixed with ENUM_NAME_UPPER_SNAKE_CASE.
-ENUM_ZERO_VALUE_SUFFIX            DEFAULT                  Checks that enum zero values are suffixed with _UNSPECIFIED (suffix is configurable).
+ENUM_ZERO_VALUE_SUFFIX            DEFAULT                  Checks that enum zero values have a consistent suffix (configurable, default suffix is "_UNSPECIFIED").
 FILE_LOWER_SNAKE_CASE             DEFAULT                  Checks that filenames are lower_snake_case.
 PACKAGE_VERSION_SUFFIX            DEFAULT                  Checks that the last component of all packages is a version of the form v\d+, v\d+test.*, v\d+(alpha|beta)\d+, or v\d+p\d+(alpha|beta)\d+, where numbers are >=1.
 PROTOVALIDATE                     DEFAULT                  Checks that protovalidate rules are valid and all CEL expressions compile.
 RPC_REQUEST_RESPONSE_UNIQUE       DEFAULT                  Checks that RPC request and response types are only used in one RPC (configurable).
 RPC_REQUEST_STANDARD_NAME         DEFAULT                  Checks that RPC request type names are RPCNameRequest or ServiceNameRPCNameRequest (configurable).
 RPC_RESPONSE_STANDARD_NAME        DEFAULT                  Checks that RPC response type names are RPCNameResponse or ServiceNameRPCNameResponse (configurable).
-SERVICE_SUFFIX                    DEFAULT                  Checks that services are suffixed with Service (suffix is configurable).
+SERVICE_SUFFIX                    DEFAULT                  Checks that services have a consistent suffix (configurable, default suffix is "Service").
 COMMENT_ENUM                      COMMENTS                 Checks that enums have non-empty comments.
 COMMENT_ENUM_VALUE                COMMENTS                 Checks that enum values have non-empty comments.
 COMMENT_FIELD                     COMMENTS                 Checks that fields have non-empty comments.
@@ -2049,7 +2077,8 @@ func TestModInitBasic(t *testing.T) {
 	t.Parallel()
 	testModInit(
 		t,
-		`version: v2
+		`# For details on buf.yaml configuration, visit https://buf.build/docs/configuration/v2/buf-yaml
+version: v2
 lint:
   use:
     - DEFAULT
