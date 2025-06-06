@@ -14,6 +14,6 @@
 
 // Generated. DO NOT EDIT.
 
-package xslices
+package sdkinfo
 
 import _ "github.com/bufbuild/buf/private/usage"
