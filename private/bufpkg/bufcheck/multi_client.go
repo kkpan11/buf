@@ -23,8 +23,8 @@ import (
 	"sync"
 
 	"buf.build/go/bufplugin/check"
-	"github.com/bufbuild/buf/private/pkg/standard/xlog/xslog"
-	"github.com/bufbuild/buf/private/pkg/standard/xslices"
+	"buf.build/go/standard/xlog/xslog"
+	"buf.build/go/standard/xslices"
 	"github.com/bufbuild/buf/private/pkg/thread"
 )
 
@@ -105,7 +105,7 @@ func (c *multiClient) Check(ctx context.Context, request check.Request) ([]*anno
 				annotations := xslices.Map(
 					delegateResponse.Annotations(),
 					func(checkAnnotation check.Annotation) *annotation {
-						return newAnnotation(checkAnnotation, delegate.PluginName)
+						return newAnnotation(checkAnnotation, delegate.PluginName, delegate.PolicyName)
 					},
 				)
 				lock.Lock()

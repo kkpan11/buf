@@ -28,11 +28,11 @@ import (
 	modulev1 "buf.build/gen/go/bufbuild/registry/protocolbuffers/go/buf/registry/module/v1"
 	ownerv1 "buf.build/gen/go/bufbuild/registry/protocolbuffers/go/buf/registry/owner/v1"
 	pluginv1beta1 "buf.build/gen/go/bufbuild/registry/protocolbuffers/go/buf/registry/plugin/v1beta1"
+	"buf.build/go/standard/xstrings"
 	"github.com/bufbuild/buf/private/bufpkg/bufparse"
 	registryv1alpha1 "github.com/bufbuild/buf/private/gen/proto/go/buf/alpha/registry/v1alpha1"
 	"github.com/bufbuild/buf/private/pkg/protoencoding"
 	"github.com/bufbuild/buf/private/pkg/protostat"
-	"github.com/bufbuild/buf/private/pkg/standard/xstrings"
 	"github.com/bufbuild/buf/private/pkg/syserror"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -320,6 +320,16 @@ type StatsPrinter interface {
 // NewStatsPrinter returns a new StatsPrinter.
 func NewStatsPrinter(writer io.Writer) StatsPrinter {
 	return newStatsPrinter(writer)
+}
+
+// SDKInfoPrinter is a printer for SDK info.
+type SDKInfoPrinter interface {
+	PrintSDKInfo(ctx context.Context, format Format, sdkInfo *registryv1alpha1.GetSDKInfoResponse) error
+}
+
+// NewSDKInfoPrinter returns a new SDKInfoPrinter.
+func NewSDKInfoPrinter(writer io.Writer) SDKInfoPrinter {
+	return newSDKInfoPrinter(writer)
 }
 
 // TabWriter is a tab writer.
