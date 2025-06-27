@@ -40,7 +40,7 @@ message Actor {
 
 // ResourceType is the type of the resource that was affected by the audited event.
 //
-// [#next-free-field: 21]
+// [#next-free-field: 22]
 enum ResourceType {
   RESOURCE_TYPE_UNSPECIFIED = 0;
   RESOURCE_TYPE_USER = 1;
@@ -63,6 +63,7 @@ enum ResourceType {
   RESOURCE_TYPE_SERVER = 13;
   RESOURCE_TYPE_DEVICE_AUTHORIZATION_GRANT = 14;
   RESOURCE_TYPE_PLUGIN_LABEL = 16;
+  RESOURCE_TYPE_SDK_PLUGIN_CONSTRAINT = 21;
 }
 
 // Resource is the affected resource by the audited event.
@@ -77,7 +78,7 @@ message Resource {
 
 // EventType is the type of audited event.
 //
-// [#next-free-field: 69]
+// [#next-free-field: 74]
 enum EventType {
   EVENT_TYPE_UNSPECIFIED = 0;
   EVENT_TYPE_ORGANIZATION_CREATED = 1;
@@ -148,6 +149,11 @@ enum EventType {
   EVENT_TYPE_PLUGIN_LABEL_MOVED = 45;
   EVENT_TYPE_PLUGIN_LABEL_ARCHIVED = 46;
   EVENT_TYPE_PLUGIN_LABEL_UNARCHIVED = 47;
+  EVENT_TYPE_SERVER_REVIEW_FLOW_ENABLED = 69;
+  EVENT_TYPE_SERVER_REVIEW_FLOW_DISABLED = 70;
+  EVENT_TYPE_SDK_PLUGIN_CONSTRAINT_CREATED = 71;
+  EVENT_TYPE_SDK_PLUGIN_CONSTRAINT_UPDATED = 72;
+  EVENT_TYPE_SDK_PLUGIN_CONSTRAINT_DELETED = 73;
 }
 
 // EventMetadata provides additional details about the audited event.
@@ -164,7 +170,7 @@ message EventMetadata {
 // it happened, who did it, which resource was affected, and more contextual information on the
 // event.
 //
-// [#next-free-field: 75]
+// [#next-free-field: 80]
 message Event {
   // Unique id of the audited event.
   string event_id = 1;
@@ -248,6 +254,11 @@ message Event {
     PayloadPluginLabelMoved plugin_label_moved = 51;
     PayloadPluginLabelArchived plugin_label_archived = 52;
     PayloadPluginLabelUnarchived plugin_label_unarchived = 53;
+    PayloadServerReviewFlowEnabled server_review_flow_enabled = 75;
+    PayloadServerReviewFlowDisabled server_review_flow_disabled = 76;
+    PayloadSDKPluginConstraintCreated sdk_plugin_constraint_created = 77;
+    PayloadSDKPluginConstraintUpdated sdk_plugin_constraint_updated = 78;
+    PayloadSDKPluginConstraintDeleted sdk_plugin_constraint_deleted = 79;
   }
 }
 
@@ -593,8 +604,8 @@ message PayloadPolicyCommitPushed {
   string policy_id = 3;
   // policy_name is the name of the policy within which the commit was created.
   string policy_name = 4;
-  // p1_digest is the p1 digest of the pushed policy commit.
-  string p1_digest = 5;
+  // o1_digest is the o1 digest of the pushed policy commit.
+  string o1_digest = 5;
 }
 
 message PayloadPluginCreated {
@@ -799,6 +810,10 @@ message PayloadServerBreakingChangePolicyEnabled {
 
 message PayloadServerBreakingChangePolicyDisabled {}
 
+message PayloadServerReviewFlowEnabled {}
+
+message PayloadServerReviewFlowDisabled {}
+
 message PayloadServerUniquenessPolicyEnabled {}
 
 message PayloadServerUniquenessPolicyDisabled {}
@@ -910,4 +925,61 @@ message PayloadPolicyLabelUnarchived {
   string policy_id = 3;
   // policy_name is the name of the policy from which the label was unarchived.
   string policy_name = 4;
+}
+
+message PayloadSDKPluginConstraintCreated {
+  // repository_owner_id is the id of the owner of the repository of the SDK constraint.
+  string repository_owner_id = 1;
+  // repository_owner_name is the name of the owner of the repository of the SDK constraint.
+  string repository_owner_name = 2;
+  // repository_id is the id of the repository of the SDK constraint.
+  string repository_id = 3;
+  // repository_name is the name of the repository of the SDK constraint.
+  string repository_name = 4;
+  // plugin_owner_id is the id of the owner of the plugin of the SDK constraint.
+  string plugin_owner_id = 5;
+  // plugin_owner_name is the name of the owner of the plugin of the SDK constraint.
+  string plugin_owner_name = 6;
+  // plugin_id is the id of the plugin of the SDK constraint.
+  string plugin_id = 7;
+  // plugin_name is the name of the plugin of the SDK constraint.
+  string plugin_name = 8;
+}
+
+message PayloadSDKPluginConstraintUpdated {
+  // repository_owner_id is the id of the owner of the repository of the SDK constraint.
+  string repository_owner_id = 1;
+  // repository_owner_name is the name of the owner of the repository of the SDK constraint.
+  string repository_owner_name = 2;
+  // repository_id is the id of the repository of the SDK constraint.
+  string repository_id = 3;
+  // repository_name is the name of the repository of the SDK constraint.
+  string repository_name = 4;
+  // plugin_owner_id is the id of the owner of the plugin of the SDK constraint.
+  string plugin_owner_id = 5;
+  // plugin_owner_name is the name of the owner of the plugin of the SDK constraint.
+  string plugin_owner_name = 6;
+  // plugin_id is the id of the plugin of the SDK constraint.
+  string plugin_id = 7;
+  // plugin_name is the name of the plugin of the SDK constraint.
+  string plugin_name = 8;
+}
+
+message PayloadSDKPluginConstraintDeleted {
+  // repository_owner_id is the id of the owner of the repository of the SDK constraint.
+  string repository_owner_id = 1;
+  // repository_owner_name is the name of the owner of the repository of the SDK constraint.
+  string repository_owner_name = 2;
+  // repository_id is the id of the repository of the SDK constraint.
+  string repository_id = 3;
+  // repository_name is the name of the repository of the SDK constraint.
+  string repository_name = 4;
+  // plugin_owner_id is the id of the owner of the plugin of the SDK constraint.
+  string plugin_owner_id = 5;
+  // plugin_owner_name is the name of the owner of the plugin of the SDK constraint.
+  string plugin_owner_name = 6;
+  // plugin_id is the id of the plugin of the SDK constraint.
+  string plugin_id = 7;
+  // plugin_name is the name of the plugin of the SDK constraint.
+  string plugin_name = 8;
 }
