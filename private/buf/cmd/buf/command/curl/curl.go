@@ -35,11 +35,11 @@ import (
 	"buf.build/go/app"
 	"buf.build/go/app/appcmd"
 	"buf.build/go/app/appext"
+	"buf.build/go/standard/xstrings"
 	"connectrpc.com/connect"
 	"github.com/bufbuild/buf/private/buf/bufcli"
 	"github.com/bufbuild/buf/private/buf/bufcurl"
 	"github.com/bufbuild/buf/private/pkg/netrc"
-	"github.com/bufbuild/buf/private/pkg/standard/xstrings"
 	"github.com/bufbuild/buf/private/pkg/verbose"
 	"github.com/quic-go/quic-go"
 	"github.com/quic-go/quic-go/http3"
@@ -1183,7 +1183,7 @@ func makeHTTP3RoundTripper(f *flags, authority string, printer verbose.Printer) 
 	roundTripper := &http3.Transport{
 		TLSClientConfig: tlsConfig,
 		QUICConfig:      quicCfg,
-		Dial: func(ctx context.Context, addr string, tlsCfg *tls.Config, cfg *quic.Config) (quic.EarlyConnection, error) {
+		Dial: func(ctx context.Context, addr string, tlsCfg *tls.Config, cfg *quic.Config) (*quic.Conn, error) {
 			printer.Printf("* Dialing (udp) %s...", addr)
 			udpAddr, err := net.ResolveUDPAddr("udp", addr)
 			if err != nil {

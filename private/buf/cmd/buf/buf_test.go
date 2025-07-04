@@ -31,6 +31,7 @@ import (
 
 	"buf.build/go/app/appcmd/appcmdtesting"
 	"buf.build/go/bufplugin/check"
+	"buf.build/go/standard/xslices"
 	"github.com/bufbuild/buf/private/buf/bufcli"
 	"github.com/bufbuild/buf/private/buf/bufctl"
 	"github.com/bufbuild/buf/private/buf/cmd/buf/internal/internaltesting"
@@ -41,7 +42,6 @@ import (
 	"github.com/bufbuild/buf/private/pkg/osext"
 	"github.com/bufbuild/buf/private/pkg/protoencoding"
 	"github.com/bufbuild/buf/private/pkg/slogtestext"
-	"github.com/bufbuild/buf/private/pkg/standard/xslices"
 	"github.com/bufbuild/buf/private/pkg/storage/storageos"
 	"github.com/bufbuild/buf/private/pkg/storage/storagetesting"
 	"github.com/stretchr/testify/assert"
@@ -2816,6 +2816,122 @@ func TestExportProtoFileRefWithPathFlag(t *testing.T) {
 		tempDir,
 		"--path",
 		filepath.Join("testdata", "protofileref", "success", "buf.proto"),
+	)
+}
+
+func TestExportAllSourceFilesV1Module(t *testing.T) {
+	t.Parallel()
+	tempDir := t.TempDir()
+	testRunStdout(
+		t,
+		nil,
+		0,
+		``,
+		"export",
+		"--all",
+		"-o",
+		tempDir,
+		filepath.Join("testdata", "export", "proto"),
+	)
+	readWriteBucket, err := storageos.NewProvider().NewReadWriteBucket(tempDir)
+	require.NoError(t, err)
+	storagetesting.AssertPaths(
+		t,
+		readWriteBucket,
+		"",
+		"LICENSE",
+		"README.md",
+		"request.proto",
+		"rpc.proto",
+	)
+}
+
+func TestExportAllSourceFilesV1Workspace(t *testing.T) {
+	t.Parallel()
+	tempDir := t.TempDir()
+	testRunStdout(
+		t,
+		nil,
+		0,
+		``,
+		"export",
+		"--all",
+		"-o",
+		tempDir,
+		filepath.Join("testdata", "export"),
+	)
+	readWriteBucket, err := storageos.NewProvider().NewReadWriteBucket(tempDir)
+	require.NoError(t, err)
+	storagetesting.AssertPaths(
+		t,
+		readWriteBucket,
+		"",
+		"LICENSE.request",
+		"LICENSE.rpc",
+		"README.another.md",
+		"README.rpc.md",
+		"another.proto",
+		"request.proto",
+		"rpc.proto",
+		"unimported.proto",
+	)
+}
+
+func TestExportAllSourceFilesV2Module(t *testing.T) {
+	t.Parallel()
+	tempDir := t.TempDir()
+	testRunStdout(
+		t,
+		nil,
+		0,
+		``,
+		"export",
+		"--all",
+		"-o",
+		tempDir,
+		filepath.Join("testdata", "workspace", "success", "v2", "export", "proto"),
+	)
+	readWriteBucket, err := storageos.NewProvider().NewReadWriteBucket(tempDir)
+	require.NoError(t, err)
+	storagetesting.AssertPaths(
+		t,
+		readWriteBucket,
+		"",
+		"LICENSE",
+		"README.md",
+		"request.proto",
+		"rpc.proto",
+	)
+}
+
+func TestExportAllSourceFilesV2Workspace(t *testing.T) {
+	t.Parallel()
+	tempDir := t.TempDir()
+	testRunStdout(
+		t,
+		nil,
+		0,
+		``,
+		"export",
+		"--all",
+		"-o",
+		tempDir,
+		filepath.Join("testdata", "workspace", "success", "v2", "export"),
+	)
+	readWriteBucket, err := storageos.NewProvider().NewReadWriteBucket(tempDir)
+	require.NoError(t, err)
+	storagetesting.AssertPaths(
+		t,
+		readWriteBucket,
+		"",
+		"LICENSE.request",
+		"LICENSE.rpc",
+		"README.another.md",
+		"README.rpc.md",
+		"another.proto",
+		"request.proto",
+		"rpc.proto",
+		"unimported.proto",
 	)
 }
 
