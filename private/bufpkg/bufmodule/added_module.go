@@ -21,7 +21,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/bufbuild/buf/private/pkg/standard/xslices"
+	"buf.build/go/standard/xslices"
 	"github.com/bufbuild/buf/private/pkg/storage"
 	"github.com/bufbuild/buf/private/pkg/syserror"
 	"github.com/google/uuid"
@@ -115,7 +115,7 @@ func (a *addedModule) ToModule(
 				[]ModuleKey{a.remoteModuleKey},
 			)
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("could not get module data for remote module %q: %w", a.remoteModuleKey.FullName().String(), err)
 			}
 			if len(moduleDatas) != 1 {
 				return nil, syserror.Newf("expected 1 ModuleData, got %d", len(moduleDatas))

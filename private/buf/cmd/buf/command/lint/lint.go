@@ -21,12 +21,12 @@ import (
 
 	"buf.build/go/app/appcmd"
 	"buf.build/go/app/appext"
+	"buf.build/go/standard/xstrings"
 	"github.com/bufbuild/buf/private/buf/bufcli"
 	"github.com/bufbuild/buf/private/buf/bufctl"
 	"github.com/bufbuild/buf/private/bufpkg/bufanalysis"
 	"github.com/bufbuild/buf/private/bufpkg/bufcheck"
 	"github.com/bufbuild/buf/private/bufpkg/bufconfig"
-	"github.com/bufbuild/buf/private/pkg/standard/xstrings"
 	"github.com/spf13/pflag"
 )
 
@@ -150,6 +150,7 @@ func run(
 	for _, imageWithConfig := range imageWithConfigs {
 		lintOptions := []bufcheck.LintOption{
 			bufcheck.WithPluginConfigs(imageWithConfig.PluginConfigs()...),
+			bufcheck.WithPolicyConfigs(imageWithConfig.PolicyConfigs()...),
 			bufcheck.WithRelatedCheckConfigs(allCheckConfigs...),
 		}
 		if err := checkClient.Lint(

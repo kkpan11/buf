@@ -23,7 +23,6 @@ import (
 
 	"buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	"buf.build/go/protovalidate"
-	"buf.build/go/protovalidate/resolve"
 	"github.com/bufbuild/buf/private/bufpkg/bufprotosource"
 	"github.com/bufbuild/buf/private/pkg/protoencoding"
 	"github.com/bufbuild/buf/private/pkg/syserror"
@@ -163,7 +162,7 @@ func checkField(
 	if err != nil {
 		return err
 	}
-	constraints, err := resolve.FieldRules(fieldDescriptor)
+	constraints, err := protovalidate.ResolveFieldRules(fieldDescriptor)
 	if err != nil {
 		return err
 	}
@@ -759,8 +758,8 @@ func checkExampleValues(
 		})
 	}
 	if !hasRules {
-		adder.addForPathf(pathToExampleValues, "example value is specified by there are no constraints defined")
-		// No need to check if example values satifisy constraints, because there is none.
+		// Since there are no constraints to check example values against, we already checked
+		// if the proper example type has been set on the field, so we can return here.
 		return nil
 	}
 	// For each example value, instantiate a message of its containing message's type

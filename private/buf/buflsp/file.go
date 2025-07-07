@@ -28,6 +28,8 @@ import (
 	"strings"
 	"time"
 
+	"buf.build/go/standard/xio"
+	"buf.build/go/standard/xlog/xslog"
 	"github.com/bufbuild/buf/private/buf/bufworkspace"
 	"github.com/bufbuild/buf/private/bufpkg/bufanalysis"
 	"github.com/bufbuild/buf/private/bufpkg/bufcheck"
@@ -35,8 +37,6 @@ import (
 	"github.com/bufbuild/buf/private/bufpkg/bufmodule"
 	"github.com/bufbuild/buf/private/pkg/git"
 	"github.com/bufbuild/buf/private/pkg/normalpath"
-	"github.com/bufbuild/buf/private/pkg/standard/xio"
-	"github.com/bufbuild/buf/private/pkg/standard/xlog/xslog"
 	"github.com/bufbuild/buf/private/pkg/storage"
 	"github.com/bufbuild/protocompile/ast"
 	"github.com/bufbuild/protocompile/parser"
@@ -721,6 +721,7 @@ func (f *file) RunLints(ctx context.Context) bool {
 		f.workspace.GetLintConfigForOpaqueID(f.module.OpaqueID()),
 		f.image,
 		bufcheck.WithPluginConfigs(f.workspace.PluginConfigs()...),
+		bufcheck.WithPolicyConfigs(f.workspace.PolicyConfigs()...),
 	))
 }
 
@@ -749,6 +750,7 @@ func (f *file) RunBreaking(ctx context.Context) bool {
 		f.image,
 		f.againstImage,
 		bufcheck.WithPluginConfigs(f.workspace.PluginConfigs()...),
+		bufcheck.WithPolicyConfigs(f.workspace.PolicyConfigs()...),
 	))
 }
 

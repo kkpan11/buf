@@ -29,6 +29,8 @@ import (
 	"buf.build/go/app/appcmd"
 	"buf.build/go/protovalidate"
 	"buf.build/go/protoyaml"
+	"buf.build/go/standard/xio"
+	"buf.build/go/standard/xslices"
 	"github.com/bufbuild/buf/private/buf/buffetch"
 	"github.com/bufbuild/buf/private/buf/bufwkt/bufwktstore"
 	"github.com/bufbuild/buf/private/buf/bufworkspace"
@@ -47,8 +49,6 @@ import (
 	"github.com/bufbuild/buf/private/pkg/httpauth"
 	"github.com/bufbuild/buf/private/pkg/normalpath"
 	"github.com/bufbuild/buf/private/pkg/protoencoding"
-	"github.com/bufbuild/buf/private/pkg/standard/xio"
-	"github.com/bufbuild/buf/private/pkg/standard/xslices"
 	"github.com/bufbuild/buf/private/pkg/storage/storageos"
 	"github.com/bufbuild/buf/private/pkg/syserror"
 	"github.com/bufbuild/buf/private/pkg/wasm"
@@ -65,6 +65,7 @@ type ImageWithConfig interface {
 	LintConfig() bufconfig.LintConfig
 	BreakingConfig() bufconfig.BreakingConfig
 	PluginConfigs() []bufconfig.PluginConfig
+	PolicyConfigs() []bufconfig.PolicyConfig
 
 	isImageWithConfig()
 }
@@ -404,7 +405,10 @@ func (c *controller) GetTargetImageWithConfigsAndCheckClient(
 		}
 		lintConfig := bufconfig.DefaultLintConfigV1
 		breakingConfig := bufconfig.DefaultBreakingConfigV1
-		var pluginConfigs []bufconfig.PluginConfig
+		var (
+			pluginConfigs []bufconfig.PluginConfig
+			policyConfigs []bufconfig.PolicyConfig
+		)
 		pluginKeyProvider := bufplugin.NopPluginKeyProvider
 		bufYAMLFile, err := bufconfig.GetBufYAMLFileForPrefixOrOverride(
 			ctx,
@@ -442,6 +446,7 @@ func (c *controller) GetTargetImageWithConfigsAndCheckClient(
 			// buf.yaml file is found, the PluginConfigs from the buf.yaml file and the PluginKeys
 			// from the buf.lock file are resolved to create the PluginKeyProvider.
 			pluginConfigs = bufYAMLFile.PluginConfigs()
+			policyConfigs = bufYAMLFile.PolicyConfigs()
 			// If a config override is provided, the PluginConfig remote Refs use the BSR
 			// to resolve the PluginKeys. No buf.lock is required.
 			// If the buf.yaml file is not found, the bufplugin.NopPluginKeyProvider is returned.
@@ -485,6 +490,7 @@ func (c *controller) GetTargetImageWithConfigsAndCheckClient(
 				lintConfig,
 				breakingConfig,
 				pluginConfigs,
+				policyConfigs,
 			),
 		}
 		checkClient, err := bufcheck.NewClient(
@@ -495,6 +501,7 @@ func (c *controller) GetTargetImageWithConfigsAndCheckClient(
 			),
 			bufcheck.ClientWithLocalWasmPluginsFromOS(),
 			bufcheck.ClientWithRemoteWasmPlugins(pluginKeyProvider, c.pluginDataProvider),
+			bufcheck.ClientWithLocalPoliciesFromOS(),
 		)
 		if err != nil {
 			return nil, nil, err
@@ -812,6 +819,7 @@ func (c *controller) GetCheckClientForWorkspace(
 			pluginKeyProvider,
 			c.pluginDataProvider,
 		),
+		bufcheck.ClientWithLocalPoliciesFromOS(),
 	)
 }
 
@@ -1182,6 +1190,7 @@ func (c *controller) buildTargetImageWithConfigs(
 				workspace.GetLintConfigForOpaqueID(module.OpaqueID()),
 				workspace.GetBreakingConfigForOpaqueID(module.OpaqueID()),
 				workspace.PluginConfigs(),
+				workspace.PolicyConfigs(),
 			),
 		)
 	}
